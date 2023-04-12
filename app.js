@@ -1,29 +1,33 @@
 const express = require('express');
-const { Pool } = require('pg');
 
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
-// Create a new connection pool to the Postgres database
-const pool = new Pool({
-    user: 'your_username',
-    host: 'localhost',
-    database: 'your_database_name',
-    password: 'your_password',
-    port: 5432,
+const pool = require('./db/db')
+
+app.get('/users', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM users');
+        res.send(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Internal server error');
+    }
 });
 
-// Define a simple route
-app.get('/', (req, res) => {
-    pool.query('SELECT NOW()', (err, result) => {
-        if (err) {
-            res.status(500).send(err.message);
-        } else {
-            res.send(result.rows[0].now);
-        }
-    });
+app.post('/users', async (req, res) => {
+    const { name, email } = req.body;
+    try {
+        await pool.query('INSERT INTO users (name, email) VALUES ($1, $2)', [name, email]);
+        res.send('User added successfully');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Internal server error');
+    }
 });
 
-// Start the server
-app.listen(3000, () => {
-    console.log('Server listening on port 3000');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
 });
