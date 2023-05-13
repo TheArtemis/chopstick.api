@@ -213,6 +213,13 @@ app.post('/update-user', verifyToken, async (req, res) => {
   try {
     console.log("User " + req.username + " requested user update");
     const user = req.username;
+
+    const check = 'SELECT * FROM users WHERE username = $1';
+    const result_check = await pool.query(query, [username]);
+    if (result.rows.length > 0) {
+        throw new Error('Username already taken');
+    }
+    
     const query = 'UPDATE users SET username = $1, email = $2 WHERE username = $3';   
     const result = await pool.query(query, [req.body.username, req.body.email, user]);
     const query2 = 'UPDATE games SET player1 = $1 WHERE player1 = $2';
