@@ -146,12 +146,82 @@ app.post('/add-game', verifyToken, async (req, res) => {
         const currentDate = new Date();
         const formattedDate = currentDate.toISOString().split('T')[0];
         const gameId = uuidv4();
-        const query = 'INSERT INTO games (gameid, player1, player2, winner, game_date) VALUES ($1, $2, $3, $4, $5)';
-        const result = await pool.query(query, [gameId, user, req.body.player2, req.body.winner, formattedDate]);
+        const query = 'INSERT INTO games (gameid, player1, player2, winner, date, rating1, rating2) VALUES ($1, $2, $3, $4, $5, $6, $7)';
+        const result = await pool.query(query, [gameId, user, req.body.player2, req.body.winner, formattedDate, req.body.rating1, req.body.rating2]);
         res.status(200).send('Game added successfully');
         
     }catch(error) {
         console.error(error.message);
         res.status(500).send(error.message);
     }
+});
+
+app.get('/games', verifyToken, async (req, res) => {
+  try {
+    console.log("User " + req.username + " requested game data");
+    const user = req.username;
+    const query = 'SELECT * FROM games WHERE player1 = $1 OR player2 = $1';
+    const result = await pool.query(query, [user]);
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send(error.message);
+  }
+  
+
+});
+
+app.post('/update-rating', verifyToken, async (req, res) => {
+  try{
+    console.log("User " + req.username + " requested rating update");
+    const user = req.username;
+    const query = 'UPDATE users SET rating = $1 WHERE username = $2';
+    const result = await pool.query(query, [req.body.rating, user]);
+    res.status(200).send('Rating updated successfully');
+  } catch(error) {
+    console.error(error.message);
+    res.status(500).send(error.message);
+  }
+});
+
+app.post('/update-bio', verifyToken, async (req, res) => {
+  try {
+    console.log("User " + req.username + " requested bio update");
+    const user = req.username;
+    const query = 'UPDATE users SET bio = $1 WHERE username = $2';
+    const result = await pool.query(query, [req.body.bio, user]);
+  } catch  (error) {
+    console.error(error.message);
+    res.status(500).send(error.message);
+  }
+});
+
+app.post('/update-picture', verifyToken, async (req, res) => {
+  try {
+    console.log("User " + req.username + " requested picture update");
+    const user = req.username;
+    const query = 'UPDATE users SET picture = $1 WHERE username = $2';
+    const result = await pool.query(query, [req.body.picture, user]);
+    res.status(200).send('Picture updated successfully');
+} catch  (error) {
+    console.error(error.message);
+    res.status(500).send(error.message);
+  }
+});
+
+app.post('/update-user', verifyToken, async (req, res) => {
+  try {
+    console.log("User " + req.username + " requested user update");
+    const user = req.username;
+    const query = 'UPDATE users SET username = $1, email = $2 WHERE username = $3';   
+    const result = await pool.query(query, [req.body.username, req.body.email, user]);
+    const query2 = 'UPDATE games SET player1 = $1 WHERE player1 = $2';
+    const result2 = await pool.query(query2, [req.body.username, user]);
+    const query3 = 'UPDATE games SET player2 = $1 WHERE player2 = $2';
+    const result3 = await pool.query(query3, [req.body.username, user]); 
+    res.status(200).send('User updated successfully');
+  } catch(error) {
+    console.error(error.message);
+    res.status(500).send(error.message);
+  }
 });
