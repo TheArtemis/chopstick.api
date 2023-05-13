@@ -215,8 +215,8 @@ app.post('/update-user', verifyToken, async (req, res) => {
     const user = req.username;
 
     const check = 'SELECT * FROM users WHERE username = $1';
-    const result_check = await pool.query(query, [username]);
-    if (result.rows.length > 0) {
+    const result_check = await pool.query(check, [req.body.username]);
+    if (result_check.rows.length > 0) {
         throw new Error('Username already taken');
     }
     
