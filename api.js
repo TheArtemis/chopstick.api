@@ -61,8 +61,8 @@ async function createUser(username, password, email) {
     }
 
     /* Insert user into database */
-    const insertQuery = 'INSERT INTO users (id, username, password, email) VALUES ($1, $2, $3, $4)';
-    const values = [userId, username, hashedPassword, email];
+    const insertQuery = 'INSERT INTO users (id, username, password, email, rating) VALUES ($1, $2, $3, $4, $5)';
+    const values = [userId, username, hashedPassword, email, 1000];
     await pool.query(insertQuery, values);
 
     console.log('User created successfully');
