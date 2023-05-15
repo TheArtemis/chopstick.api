@@ -65,7 +65,7 @@ function makeAttack(player, hand1, opponent, hand2) { //player->hand1 attacks op
         board[opponent][hand2] = sum;
 }
 
-function makeSplit(player, hand1){
+function makeSplit(player, hand1){ 
 
     if(board[player][hand1] % 2 !== 0)
         return false;
@@ -117,8 +117,7 @@ function commandLineGameLoop() {
             const [type, hand1, hand2] = answer.split(' ');            
 
             if(!makeMove(currentPlayer, parseInt(hand1), parseInt(hand2), type)){
-                console.log("Invalid move, try again");
-                console.log("\n")                
+                console.log("Invalid move, try again\n");                              
             }
 
             else {
