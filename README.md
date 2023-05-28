@@ -30,3 +30,5 @@ user: 'lemon',
     password: 'happylemon',
     port: 6543,
 ```
+
+The database was created with PostgreSQL setting up a simple Docker container. You can find the Dockerfile the main folder.
